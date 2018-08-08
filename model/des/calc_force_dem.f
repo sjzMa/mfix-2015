@@ -174,10 +174,8 @@
             phaseI = PIJK(I,5)
 
 ! Hertz spring-dashpot contact model
-            IF (DES_COLL_MODEL_ENUM .EQ. HERTZIAN) THEN
-               !Fix Bug OVERLAP_N < 0 at Initialization
-               IF (OVERLAP_N .LE. 0) OVERLAP_N = 0
-
+            IF (DES_COLL_MODEL_ENUM .EQ. HERTZIAN) THEN     
+               IF (OVERLAP_N .LE. 0) OVERLAP_N = 0 ! Fix Bug OVERLAP_N < 0 at Initialization for HERTZIAN method
                sqrt_overlap = SQRT(OVERLAP_N)
                KN_DES = hert_kn(phaseLL,phaseI)*sqrt_overlap
                KT_DES = hert_kt(phaseLL,phaseI)*sqrt_overlap
