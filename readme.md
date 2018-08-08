@@ -14,7 +14,7 @@ git clone https://github.com/sjzMa/mfix-2015.git
 
 cd mfix-2015
 
-mkdir trybuild && cd mkdir trybuild
+mkdir trybuild && cd trybuild
 
 ####  computing with parallel
 ../configure_mfix --host=x86_64-w64-mingw32 FCFLAGS="-O2" FFLAGS="-O2" --enable-smp
