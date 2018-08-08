@@ -6,7 +6,7 @@ Please see mfix_usr_guide.pdf
 
 ## Ubuntu or WSL(Windows10) Cross-Compiler
 
-apt install -y --no-install-recommends mingw-w64 build-essential
+apt install -y --no-install-recommends gfortran-mingw-w64 build-essential sed
 
 ## CentOS
 
