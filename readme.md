@@ -16,6 +16,8 @@ yum install -y mingw-w64
 
 git clone https://github.com/sjzMa/mfix-2015.git
 
+chmod 777 -R  mfix-2015/
+
 cd mfix-2015
 
 mkdir trybuild && cd trybuild
