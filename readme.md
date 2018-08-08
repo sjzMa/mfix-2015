@@ -22,15 +22,15 @@ cd mfix-2015
 
 mkdir trybuild && cd trybuild
 
-#### computing with parallel
+## computing with parallel
 
 ../configure_mfix --host=x86_64-w64-mingw32 FCFLAGS="-O2" FFLAGS="-O2" --enable-smp
 
-#### computing without parallel
+## computing without parallel
 
-#### make
 ../configure_mfix --host=x86_64-w64-mingw32 FCFLAGS="-O2" FFLAGS="-O2"
 
+## make
 make -j4 LDFLAGS="-static -Wl,--stack,16777216"
 
 Last, you will get standalone EXE Program
