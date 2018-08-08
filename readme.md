@@ -22,9 +22,9 @@ cd mfix-2015
 
 mkdir trybuild && cd trybuild
 
-###  computing with parallel
+1. computing with parallel
 ../configure_mfix --host=x86_64-w64-mingw32 FCFLAGS="-O2" FFLAGS="-O2" --enable-smp
-###  computing without parallel
+2. computing without parallel
 ../configure_mfix --host=x86_64-w64-mingw32 FCFLAGS="-O2" FFLAGS="-O2"
 
 make -j4 LDFLAGS="-static -Wl,--stack,16777216"
