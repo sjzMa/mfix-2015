@@ -175,6 +175,9 @@
 
 ! Hertz spring-dashpot contact model
             IF (DES_COLL_MODEL_ENUM .EQ. HERTZIAN) THEN
+               !Fix Bug OVERLAP_N < 0 at Initialization
+               IF (OVERLAP_N .LE. 0) OVERLAP_N = 0
+
                sqrt_overlap = SQRT(OVERLAP_N)
                KN_DES = hert_kn(phaseLL,phaseI)*sqrt_overlap
                KT_DES = hert_kt(phaseLL,phaseI)*sqrt_overlap
