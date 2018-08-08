@@ -1,0 +1,167 @@
+#!/bin/bash
+#
+# MFIX script file for obtaining user-defined files and
+# executing 'make'
+#  Usage:
+#     1) on unix machines     :  sh    mfix/model/make_mfix
+#     2) on NT using PGI bash :  bash  mfix/model/make_mfix
+
+input=$@
+
+MFIX_VERSION="2015-2"
+EXEC_FILE="mfix.exe"
+MAKEFILE="Makefile"
+DPO_BASE=".."
+DPO="OBJ"
+OBJ_EXT="o"
+FORTRAN_EXT="f"
+
+RUN_DIR=
+MFIX_SRC=
+MFIX_CONFIG=
+MFIX_TOOLS=
+MFIX_POST=
+
+# Set some of the folder paths.
+RUN_DIR=$(pwd) #$(pwd | sed 's/ /\\ /g')
+MFIX_SRC=$(echo $0 | sed 's/\/make_mfix.old//')
+MFIX_CONFIG=${MFIX_SRC}/../config
+
+# symlink BURCAT.THR into RUN_DIR
+ln -sf ${MFIX_SRC}/thermochemical/BURCAT.THR ${RUN_DIR}/BURCAT.THR
+
+# This sets absolute paths.
+. ${MFIX_CONFIG}/sys_info.sh
+
+# Request variables.
+REQ_MODE=1
+REQ_OPT=1
+REQ_COMP=1
+
+# Collected from the user
+USE_TAU=0
+USE_NETCDF=0
+EXPERT=0
+FORCE_COMPILE=0
+USE_DEBUG=0
+
+# SMP/DMP Variables
+USE_SMP=0
+USE_DMP=0
+
+# Auto-compile
+#  0 : User provides all input
+#  1 : Use last build
+AUTOCOMPILE=0
+
+CLEAN_OBJS=0
+
+# Set based upon user input.
+AR=ar
+COMP_FILE=
+FORT_FLAGS=
+FORT_FLAGS2=
+FORT_FLAGS3=
+LINK_CMD=
+LINK_FLAGS=
+LIB_FLAGS=
+FORTRAN_CMD=
+MODULE_CODE=
+
+# Subdirectories to be checked.
+FOLDER_LIST="."
+FOLDER_LIST=${FOLDER_LIST}" cartesian_grid"
+FOLDER_LIST=${FOLDER_LIST}" chem"
+FOLDER_LIST=${FOLDER_LIST}" des"
+FOLDER_LIST=${FOLDER_LIST}" dmp_modules"
+FOLDER_LIST=${FOLDER_LIST}" dqmom"
+FOLDER_LIST=${FOLDER_LIST}" GhdTheory"
+FOLDER_LIST=${FOLDER_LIST}" qmomk"
+FOLDER_LIST=${FOLDER_LIST}" thermochemical"
+FOLDER_LIST=${FOLDER_LIST}" check_data"
+
+EXT_LIST="f F inc"
+
+# Import functions for MPI setup
+. $MFIX_CONFIG/mpi_fun.sh
+
+# Parse user arguments.
+. $MFIX_CONFIG/parse_args.sh
+
+if [[ ${USE_MKL} && ! ${COMP_FILE} =~ .*intel.* ]]; then
+    echo "  Error: --mkl option only works with the Intel Fortran Compiler"
+    exit -1
+fi
+
+# Load compiler and library information.
+if test ${AUTOCOMPILE} -ne 1; then
+
+# Collect user information.
+# > Build options
+  . $MFIX_CONFIG/req_usr.sh
+
+# > Compiler
+  . $MFIX_CONFIG/sys_comp.sh
+
+# Set the compiler flags.
+  . $COMP_FILE
+
+# Set NetCDF library flags
+  . ${MFIX_CONFIG}/netcdf.sh
+# Set Trilinos library flags
+
+fi # End of Autocompile <= 1
+
+# Reaction preprocessor.
+if test ${REQ_RXNS} = 1; then
+  . ${MFIX_CONFIG}/rxn_preproc.sh
+fi
+
+if [[ -n $USE_MIC ]]; then
+    EXEC_FILE=${EXEC_FILE}.mic
+fi
+
+# Update source code if needed.
+. ${MFIX_CONFIG}/swap_build.sh
+
+# Clean out old object files.
+if test ${CLEAN_OBJS} -eq 1; then
+  /bin/rm -rf ${DPO}
+  mkdir ${DPO}
+fi
+
+# Construct the makefile
+if test ${AUTOCOMPILE} -ne 1; then
+  . ${MFIX_CONFIG}/build_Makefile.sh
+fi
+
+echo "make -j -f ${MAKEFILE} ${EXEC_FILE}"
+make ${MAKE_ARGS} -f ${MAKEFILE} ${EXEC_FILE}
+result=$?
+
+if test $result = 0; then
+  /bin/cp -f ${EXEC_FILE} "${RUN_DIR}"
+  if test ${USE_DMP} -eq 1; then
+    echo
+    echo "**********************************************"
+    echo " Compilation successful: ${EXEC_FILE} created"
+    echo " To run MFIX type (or equivalent): "
+    echo "   mpirun -np<# processors> ${EXEC_FILE}"
+    echo "**********************************************"
+    echo
+  else
+    echo
+    echo "**********************************************"
+    echo " Compilation successful: ${EXEC_FILE} created"
+    echo " To run MFIX type: ./${EXEC_FILE}"
+    echo "**********************************************"
+    echo
+  fi
+else
+  echo
+  echo
+  echo "*** File ${EXEC_FILE} NOT created."
+  echo
+fi
+
+exit $result

@@ -1,0 +1,70 @@
+Changes from MFIX 2015-1 (Date: 04/03/2014) to MFIX 2015-2 (Date: 10/27/2015)
+
+
+New features added:
+-------------------
+
+* Autotools Build System ¿ MFIX now uses autotools to configure and
+  compile the code. This increases code portability while reducing
+  overall script maintenance.
+
+* Semi-Explicit Coupling for DEM Simulation ¿ A semi-explicit algorithm
+  for coupled gas-solids flows was implemented in MFIX-DEM. This
+  approach calculates gas-solids interaction forces during the gas phase
+  time step resulting in decreased time to solution.
+
+* Two New Continuum Momentum Equation Formulations ¿ MFIX¿s governing
+  equations were not consistent with either of the primary recognized
+  form of the governing equations.
+
+  o The Jackson form of the governing equations contains the void
+    fraction as a multiplier in front of the divergence of the gas phase
+    stress tensor in the gas phase momentum equation and includes the
+    solids volume fraction multiplied by the gas phase stress tensor in
+    the solids phase momentum equation.
+    Invoked using keyword Jackson.
+
+  o The Ishii form of the governing equation includes the void fraction 
+    as a multiplier within the divergence term of the stress tensor. 
+    Invoked using keyword Ishii.
+
+
+Changes in existing features:
+-----------------------------
+
+* Removed DES_CONTINUUM_COUPLED keyword ¿ Pure granular flow simulations
+  with MFIX-DEM and MFIX-PIC are now specified by setting the gas 
+  density to zero (RO_g0=0.0) making them consistent with MFIX-TFM.
+  Coupled gas-solids simulation occur by specifying a non-zero or 
+  compressible gas phase density.
+
+* Removed DES_RES_DT and DES_SPX_DT ¿Pure granular flows simulations
+  with MFIX-DEM and MFIX-PIC now use the same restart and data output
+  keywords, RES_DT and SPX_DT. This makes specifying these values
+  consistent across all models and simulation setups.
+
+
+* Documentation:
+----------------
+
+* Updated documentation:
+  o MFIX User Guide  [1]
+
+
+Project Metrics:
+----------------
+
+* Change from 2014-1 Release:
+  o 20 fewer files and about 2,200 few lines of code
+
+* 2015-1 Total count:
+  o Files: 540
+  o Lines: 214,241
+  o Blank Lines: 35,044
+  o Code Lines: 121,693
+  o Comment Lines: 60,700
+  o Statements: 82,936
+
+References:
+-----------
+[1] https://mfix.netl.doe.gov/download/mfix/mfix_current_documentation/mfix_user_guide.pdf
