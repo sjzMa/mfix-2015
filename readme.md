@@ -2,7 +2,7 @@
 Please see mfix_usr_guide.pdf
 
 
-# Cross-Compile 
+# Cross-Compile (To Build EXE windows Program)
 
 ## Ubuntu or WSL(Windows10)
 
